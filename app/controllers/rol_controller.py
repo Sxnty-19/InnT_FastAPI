@@ -4,11 +4,11 @@ from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from config.neon_config import get_db_connection
 from utils.timezone_utils import get_fecha_actual
-from models.usuario_model import Usuario
+from models.rol_model import Rol
 
-class UsuarioController:
+class RolController:
 
-    def create_usuario(self, usuario: Usuario): #---
+    def create_rol(self, rol: Rol):
         conn = None
         cursor = None
 
@@ -18,34 +18,20 @@ class UsuarioController:
             fecha_actual = get_fecha_actual()
 
             query = """
-                INSERT INTO usuario (
-                    id_rol,
-                    primer_nombre,
-                    segundo_nombre,
-                    primer_apellido,
-                    segundo_apellido,
-                    telefono,
-                    correo,
-                    username,
-                    password,
+                INSERT INTO rol (
+                    nombre,
+                    descripcion,
                     estado,
                     date_created,
                     date_updated
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                RETURNING id_usuario;
+                VALUES (%s, %s, %s, %s, %s)
+                RETURNING id_rol;
             """
             values = (
-                usuario.id_rol,
-                usuario.primer_nombre,
-                usuario.segundo_nombre,
-                usuario.primer_apellido,
-                usuario.segundo_apellido,
-                usuario.telefono,
-                usuario.correo,
-                usuario.username,
-                usuario.password,
-                usuario.estado,
+                rol.nombre,
+                rol.descripcion,
+                rol.estado,
                 fecha_actual,
                 fecha_actual
             )
@@ -56,14 +42,14 @@ class UsuarioController:
 
             return {
                 "success": True,
-                "message": "Usuario creado correctamente.",
-                "id_usuario": new_id
+                "message": "Rol creado correctamente.",
+                "id_rol": new_id
             }
 
         except Exception as err:
             if conn:
                 conn.rollback()
-            raise HTTPException(status_code=500, detail=f"Error al crear usuario: {err}")
+            raise HTTPException(status_code=500, detail=f"Error al crear rol: {err}")
 
         finally:
             if cursor:
@@ -71,23 +57,25 @@ class UsuarioController:
             if conn:
                 conn.close()
 
-    def get_usuarios(self): #---
+    def get_roles(self): #---
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor = conn.cursor(
+                cursor_factory=psycopg2.extras.RealDictCursor
+            )
 
             cursor.execute("""
                 SELECT *
-                FROM usuario
+                FROM rol
             """)
 
             data = cursor.fetchall()
 
             if not data:
-                raise HTTPException(status_code=404, detail="No hay usuarios registrados.")
+                raise HTTPException(status_code=404, detail="No hay roles registrados.")
 
             return {
                 "success": True,
@@ -95,7 +83,7 @@ class UsuarioController:
             }
 
         except Exception as err:
-            raise HTTPException(status_code=500, detail=f"Error al obtener usuarios: {err}")
+            raise HTTPException(status_code=500, detail=f"Error al obtener roles: {err}")
 
         finally:
             if cursor:
@@ -103,7 +91,7 @@ class UsuarioController:
             if conn:
                 conn.close()
 
-    def get_usuario_by_id(self, id_usuario: int): #---
+    def get_rol_by_id(self, id_rol: int): #---
         conn = None
         cursor = None
 
@@ -113,16 +101,16 @@ class UsuarioController:
 
             cursor.execute("""
                 SELECT *
-                FROM usuario
-                WHERE id_usuario = %s
-            """, (id_usuario,))
+                FROM rol
+                WHERE id_rol = %s
+            """, (id_rol,))
 
             data = cursor.fetchone()
 
             if not data:
                 raise HTTPException(
                     status_code=404,
-                    detail="Usuario no encontrado."
+                    detail="Rol no encontrado."
                 )
 
             return {
@@ -131,7 +119,7 @@ class UsuarioController:
             }
 
         except Exception as err:
-            raise HTTPException( status_code=500, detail=f"Error al obtener usuario: {err}")
+            raise HTTPException(status_code=500, detail=f"Error al obtener rol: {err}")
 
         finally:
             if cursor:

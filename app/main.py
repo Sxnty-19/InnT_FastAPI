@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-#from routes.auth_routes import router as auth_router
+from routes.rol_routes import router as rol_router
 from routes.usuario_routes import router as usuario_router
 
 app = FastAPI(
@@ -18,5 +18,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#app.include_router(auth_router, prefix="/auth", tags=["Auth"])
+app.include_router(rol_router, prefix="/roles", tags=["Roles"])
 app.include_router(usuario_router, prefix="/usuarios", tags=["Usuarios"])
+
+#uvicorn main:app --reload
+#fastapi dev main.py
