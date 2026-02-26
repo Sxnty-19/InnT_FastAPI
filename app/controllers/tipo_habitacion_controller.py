@@ -4,11 +4,11 @@ from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from config.neon_config import get_db_connection
 from utils.timezone_utils import get_fecha_actual
-from models.documento_model import Documento
+from models.tipo_habitacion_model import TipoHabitacion
 
-class DocumentoController:
+class TipoHabitacionController:
 
-    def create_documento(self, documento: Documento): #---
+    def create_tipo_habitacion(self, tipo: TipoHabitacion): #---
         conn = None
         cursor = None
 
@@ -18,24 +18,24 @@ class DocumentoController:
             fecha_actual = get_fecha_actual()
 
             query = """
-                INSERT INTO documento (
-                    id_tdocumento,
-                    id_usuario,
-                    numero_documento,
-                    lugar_expedicion,
+                INSERT INTO tipo_habitacion (
+                    nombre,
+                    descripcion,
+                    capacidad_max,
+                    precio_x_dia,
                     estado,
                     date_created,
                     date_updated
                 )
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-                RETURNING id_documento;
+                RETURNING id_thabitacion;
             """
             values = (
-                documento.id_tdocumento,
-                documento.id_usuario,
-                documento.numero_documento,
-                documento.lugar_expedicion,
-                documento.estado,
+                tipo.nombre,
+                tipo.descripcion,
+                tipo.capacidad_max,
+                tipo.precio_x_dia,
+                tipo.estado,
                 fecha_actual,
                 fecha_actual
             )
@@ -46,14 +46,14 @@ class DocumentoController:
 
             return {
                 "success": True,
-                "message": "Documento creado correctamente.",
-                "id_documento": new_id
+                "message": "Tipo de habitación creado correctamente.",
+                "id_thabitacion": new_id
             }
 
         except Exception as err:
             if conn:
                 conn.rollback()
-            raise HTTPException(status_code=500, detail=f"Error al crear documento: {err}")
+            raise HTTPException(status_code=500, detail=f"Error al crear tipo de habitación: {err}")
 
         finally:
             if cursor:
@@ -61,7 +61,7 @@ class DocumentoController:
             if conn:
                 conn.close()
 
-    def get_documentos(self): #---
+    def get_tipos_habitacion(self): #---
         conn = None
         cursor = None
 
@@ -71,13 +71,13 @@ class DocumentoController:
 
             cursor.execute("""
                 SELECT *
-                FROM documento
+                FROM tipo_habitacion
             """)
 
             data = cursor.fetchall()
 
             if not data:
-                raise HTTPException(status_code=404, detail="No hay documentos registrados.")
+                raise HTTPException(status_code=404, detail="No hay tipos de habitación registrados.")
 
             return {
                 "success": True,
@@ -85,7 +85,7 @@ class DocumentoController:
             }
 
         except Exception as err:
-            raise HTTPException(status_code=500, detail=f"Error al obtener documentos: {err}")
+            raise HTTPException(status_code=500, detail=f"Error al obtener tipos de habitación: {err}")
 
         finally:
             if cursor:
@@ -93,7 +93,7 @@ class DocumentoController:
             if conn:
                 conn.close()
 
-    def get_documento_by_id(self, id_documento: int): #---
+    def get_tipo_habitacion_by_id(self, id_thabitacion: int): #--- 
         conn = None
         cursor = None
 
@@ -103,14 +103,14 @@ class DocumentoController:
 
             cursor.execute("""
                 SELECT *
-                FROM documento
-                WHERE id_documento = %s
-            """, (id_documento,))
+                FROM tipo_habitacion
+                WHERE id_thabitacion = %s
+            """, (id_thabitacion,))
 
             data = cursor.fetchone()
 
             if not data:
-                raise HTTPException(status_code=404, detail="Documento no encontrado.")
+                raise HTTPException(status_code=404, detail="Tipo de habitación no encontrado.")
 
             return {
                 "success": True,
@@ -118,7 +118,7 @@ class DocumentoController:
             }
 
         except Exception as err:
-            raise HTTPException(status_code=500, detail=f"Error al obtener documento: {err}")
+            raise HTTPException(status_code=500, detail=f"Error al obtener tipo de habitación: {err}")
 
         finally:
             if cursor:

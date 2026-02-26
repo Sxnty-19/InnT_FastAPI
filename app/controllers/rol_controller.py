@@ -8,7 +8,7 @@ from models.rol_model import Rol
 
 class RolController:
 
-    def create_rol(self, rol: Rol):
+    def create_rol(self, rol: Rol): #---
         conn = None
         cursor = None
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from controllers.tipo_documento_controller import TipoDocumentoController
 from models.tipo_documento_model import TipoDocumento
+from controllers.tipo_documento_controller import TipoDocumentoController
 
 router = APIRouter()
 tipo_documento_controller = TipoDocumentoController()

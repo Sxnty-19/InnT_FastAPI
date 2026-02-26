@@ -8,7 +8,7 @@ from models.tipo_documento_model import TipoDocumento
 
 class TipoDocumentoController:
 
-    def create_tipo_documento(self, tipo: TipoDocumento):
+    def create_tipo_documento(self, tipo: TipoDocumento): #---
         conn = None
         cursor = None
 
@@ -57,7 +57,7 @@ class TipoDocumentoController:
             if conn:
                 conn.close()
 
-    def get_tipos_documento(self):
+    def get_tipos_documento(self): #---
         conn = None
         cursor = None
 
@@ -89,7 +89,7 @@ class TipoDocumentoController:
             if conn:
                 conn.close()
 
-    def get_tipo_documento_by_id(self, id_tdocumento: int):
+    def get_tipo_documento_by_id(self, id_tdocumento: int): #---
         conn = None
         cursor = None
 
