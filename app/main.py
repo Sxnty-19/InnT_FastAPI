@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routes.rol_routes import router as rol_router
 from routes.usuario_routes import router as usuario_router
+from routes.modulo_routes import router as modulo_router
 
 app = FastAPI(
     title="InnT API",
@@ -20,6 +21,7 @@ app.add_middleware(
 
 app.include_router(rol_router, prefix="/roles", tags=["Roles"])
 app.include_router(usuario_router, prefix="/usuarios", tags=["Usuarios"])
+app.include_router(modulo_router, prefix="/modulos", tags=["Módulos"])
 
 #uvicorn main:app --reload
 #fastapi dev main.py
