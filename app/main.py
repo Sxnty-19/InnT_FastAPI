@@ -9,6 +9,7 @@ from routes.tipo_documento_routes import router as tipo_documento_router
 from routes.documento_routes import router as documento_router
 from routes.tipo_habitacion_routes import router as tipo_habitacion_router
 from routes.habitacion_routes import router as habitacion_router
+from routes.reserva_routes import router as reserva_router
 
 app = FastAPI(
     title="InnT API",
@@ -32,6 +33,7 @@ app.include_router(tipo_documento_router, prefix="/tipos-documento", tags=["Tipo
 app.include_router(documento_router, prefix="/documentos", tags=["Documentos"])
 app.include_router(tipo_habitacion_router, prefix="/tipos-habitacion", tags=["Tipos de Habitación"])
 app.include_router(habitacion_router, prefix="/habitaciones", tags=["Habitaciones"])
+app.include_router(reserva_router, prefix="/reservas", tags=["Reservas"])
 
 #uvicorn main:app --reload
 #fastapi dev main.py
