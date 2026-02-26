@@ -2,11 +2,12 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
-class Notificacion(BaseModel):
-    id_notificacion: Optional[int] = None
+class Solicitud(BaseModel):
+    id_solicitud: Optional[int] = None
     id_usuario: int
     id_habitacion: int
-    descripcion: str
+    descripcion: Optional[str] = None
+    prioridad: Optional[str] = "normal"
     estado: Optional[bool] = True
     date_created: Optional[datetime] = None
     date_updated: Optional[datetime] = None
