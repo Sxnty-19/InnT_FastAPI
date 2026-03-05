@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from routes.auth_routes import router as auth_router
+
 from routes.rol_routes import router as rol_router
 from routes.usuario_routes import router as usuario_router
 from routes.modulo_routes import router as modulo_router
@@ -27,6 +29,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(auth_router, prefix="/auth", tags=["Autenticación"])
 
 app.include_router(rol_router, prefix="/roles", tags=["Roles"])
 app.include_router(usuario_router, prefix="/usuarios", tags=["Usuarios"])

@@ -20,7 +20,7 @@ CREATE TABLE usuario (
     primer_nombre VARCHAR(50) NOT NULL,
     segundo_nombre VARCHAR(50),
     primer_apellido VARCHAR(50) NOT NULL,
-    segundo_apellido VARCHAR(50) NOT NULL,
+    segundo_apellido VARCHAR(50),
     telefono VARCHAR(20),
     correo VARCHAR(100) UNIQUE,
     username VARCHAR(100) UNIQUE NOT NULL,

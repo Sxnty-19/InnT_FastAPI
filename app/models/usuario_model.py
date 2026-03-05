@@ -8,7 +8,7 @@ class Usuario(BaseModel):
     primer_nombre: str
     segundo_nombre: Optional[str] = None
     primer_apellido: str
-    segundo_apellido: str
+    segundo_apellido: Optional[str] = None
     telefono: Optional[str] = None
     correo: Optional[EmailStr] = None 
     username: str
