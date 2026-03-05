@@ -8,7 +8,9 @@ class Reserva(BaseModel):
     id_usuario: int
     date_start: datetime
     date_end: datetime
-    total: Decimal
+    tiene_ninos: Optional[bool] = False
+    tiene_mascotas: Optional[bool] = False
+    total_cop: Decimal
     estado: Optional[bool] = True
     date_created: Optional[datetime] = None
     date_updated: Optional[datetime] = None

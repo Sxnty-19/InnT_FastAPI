@@ -22,7 +22,9 @@ class ReservaController:
                     id_usuario,
                     date_start,
                     date_end,
-                    total,
+                    tiene_ninos,
+                    tiene_mascotas,
+                    total_cop,
                     estado,
                     date_created,
                     date_updated
@@ -34,7 +36,9 @@ class ReservaController:
                 reserva.id_usuario,
                 reserva.date_start,
                 reserva.date_end,
-                reserva.total,
+                reserva.tiene_ninos,
+                reserva.tiene_mascotas,
+                reserva.total_cop,
                 reserva.estado,
                 fecha_actual,
                 fecha_actual
