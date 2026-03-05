@@ -158,5 +158,5 @@ CREATE TABLE solicitud (
     date_created TIMESTAMP DEFAULT NOW(),
     date_updated TIMESTAMP,
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
-    FOREIGN KEY (id_habitacion) REFERENCES habitacion(id_habitacion),
+    FOREIGN KEY (id_habitacion) REFERENCES habitacion(id_habitacion)
 );

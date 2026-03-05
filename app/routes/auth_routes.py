@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Form
 from models.usuario_model import Usuario
 from controllers.auth_controller import AuthController
 
@@ -8,3 +8,7 @@ auth_controller = AuthController()
 @router.post("/register")
 async def register(usuario: Usuario):
     return auth_controller.register_user(usuario)
+
+@router.post("/login")
+async def login(username: str = Form(...), password: str = Form(...)):
+    return auth_controller.login(username, password)
