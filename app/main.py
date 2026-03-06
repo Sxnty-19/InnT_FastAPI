@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from utils.auth_utils import verificar_token
 
 from routes.auth_routes import router as auth_router
 
@@ -30,20 +31,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.api_route("/", methods=["GET", "HEAD"], tags=["Sistema"])
+async def root():
+    return {"message": "API en funcionamiento..."}
+
 app.include_router(auth_router, prefix="/auth", tags=["Autenticación"])
 
-app.include_router(rol_router, prefix="/roles", tags=["Roles"])
-app.include_router(usuario_router, prefix="/usuarios", tags=["Usuarios"])
-app.include_router(modulo_router, prefix="/modulos", tags=["Módulos"])
-app.include_router(modulo_rol_router, prefix="/modulos-roles", tags=["Módulos-Roles"])
-app.include_router(tipo_documento_router, prefix="/tipos-documento", tags=["Tipos de Documento"])
-app.include_router(documento_router, prefix="/documentos", tags=["Documentos"])
-app.include_router(tipo_habitacion_router, prefix="/tipos-habitacion", tags=["Tipos de Habitación"])
-app.include_router(habitacion_router, prefix="/habitaciones", tags=["Habitaciones"])
-app.include_router(reserva_router, prefix="/reservas", tags=["Reservas"])
-app.include_router(reserva_habitacion_router, prefix="/reservas-habitaciones", tags=["Reservas-Habitaciones"])
-app.include_router(usuario_habitacion_router, prefix="/usuarios-habitaciones", tags=["Usuarios-Habitaciones"])
-app.include_router(solicitud_router, prefix="/solicitudes", tags=["Solicitudes"])
+app.include_router(rol_router, prefix="/roles", tags=["Roles"], dependencies=[Depends(verificar_token)])
+app.include_router(usuario_router, prefix="/usuarios", tags=["Usuarios"], dependencies=[Depends(verificar_token)])
+app.include_router(modulo_router, prefix="/modulos", tags=["Módulos"], dependencies=[Depends(verificar_token)])
+app.include_router(modulo_rol_router, prefix="/modulos-roles", tags=["Módulos-Roles"], dependencies=[Depends(verificar_token)])
+app.include_router(tipo_documento_router, prefix="/tipos-documento", tags=["Tipos de Documento"], dependencies=[Depends(verificar_token)])
+app.include_router(documento_router, prefix="/documentos", tags=["Documentos"],dependencies=[Depends(verificar_token)])
+app.include_router(tipo_habitacion_router, prefix="/tipos-habitacion", tags=["Tipos de Habitación"],dependencies=[Depends(verificar_token)])
+app.include_router(habitacion_router, prefix="/habitaciones", tags=["Habitaciones"], dependencies=[Depends(verificar_token)])
+app.include_router(reserva_router, prefix="/reservas", tags=["Reservas"], dependencies=[Depends(verificar_token)])
+app.include_router(reserva_habitacion_router, prefix="/reservas-habitaciones", tags=["Reservas-Habitaciones"], dependencies=[Depends(verificar_token)])
+app.include_router(usuario_habitacion_router, prefix="/usuarios-habitaciones", tags=["Usuarios-Habitaciones"], dependencies=[Depends(verificar_token)])
+app.include_router(solicitud_router, prefix="/solicitudes", tags=["Solicitudes"], dependencies=[Depends(verificar_token)])
 
 #uvicorn main:app --reload
 #fastapi dev main.py
+
+#CRUD : C-Create(c), R-Read(r), U-Update(u), D-Delete(d)

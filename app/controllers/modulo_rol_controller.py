@@ -121,3 +121,49 @@ class ModuloRolController:
                 cursor.close()
             if conn:
                 conn.close()
+
+    def get_modulos_by_rol(self, payload: dict):
+        conn = None
+        cursor = None
+
+        try:
+            id_rol = payload.get("id_rol")
+
+            if not id_rol:
+                raise HTTPException(status_code=401, detail="Token inválido: rol no encontrado.")
+
+            conn = get_db_connection()
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+            query = """
+                SELECT 
+                    m.id_modulo,
+                    m.nombre,
+                    m.ruta
+                FROM modulo_rol mr
+                INNER JOIN modulo m 
+                    ON mr.id_modulo = m.id_modulo
+                WHERE mr.id_rol = %s
+                AND mr.estado = TRUE
+                AND m.estado = TRUE
+            """
+
+            cursor.execute(query, (id_rol,))
+            data = cursor.fetchall()
+
+            if not data:
+                raise HTTPException(status_code=404, detail="Este rol no tiene módulos asignados.")
+
+            return {
+                "success": True,
+                "data": jsonable_encoder(data)
+            }
+
+        except Exception as err:
+            raise HTTPException(status_code=500, detail=f"Error al obtener módulos del rol: {err}")
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()

@@ -9,7 +9,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     token = crear_token({
         "id_usuario": 1,
-        "id_rol": 1
+        "id_rol": 3
     })
 
     print("TOKEN GENERADO:\n")
