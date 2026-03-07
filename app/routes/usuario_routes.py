@@ -17,3 +17,12 @@ async def get_usuarios():
 @router.get("/r/{id_usuario}")
 async def get_usuario_by_id(id_usuario: int):
     return usuario_controller.get_usuario_by_id(id_usuario)
+
+@router.get("/r-token")
+async def get_usuario(payload: dict = Depends(verificar_token)):
+    return usuario_controller.get_usuario(payload)
+
+@router.patch("/u")
+def update_usuario(usuario: Usuario, payload: dict = Depends(verificar_token)):
+    data = usuario.dict(exclude_unset=True)
+    return usuario_controller.update_usuario(data, payload)

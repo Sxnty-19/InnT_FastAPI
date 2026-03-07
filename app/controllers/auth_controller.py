@@ -106,13 +106,13 @@ class AuthController:
                     r.nombre
                 FROM usuario u
                 INNER JOIN rol r ON u.id_rol = r.id_rol
-                WHERE u.username = %s
+                WHERE u.username = %s AND u.estado = true
             """, (username,))
 
             user = cursor.fetchone()
 
             if not user:
-                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+                raise HTTPException(status_code=404, detail="Usuario o Contraseña Incorrectos")
 
             id_usuario = user[0]
             password_db = user[1]
@@ -126,7 +126,7 @@ class AuthController:
             nombre_rol = user[7]
 
             if not verify_password(password, password_db):
-                raise HTTPException(status_code=401, detail="Credenciales inválidas")
+                raise HTTPException(status_code=401, detail="Usuario o Contraseña Incorrectos")
 
             nombre_completo = f"{primer_nombre} {segundo_nombre} {primer_apellido} {segundo_apellido}".strip()
 
