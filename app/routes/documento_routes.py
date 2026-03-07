@@ -17,3 +17,7 @@ async def get_documentos():
 @router.get("/r/{id_documento}")
 async def get_documento_by_id(id_documento: int):
     return documento_controller.get_documento_by_id(id_documento)
+
+@router.get("/r-usuario")
+def get_documentos_usuario(payload: dict = Depends(verificar_token)):
+    return documento_controller.get_documentos_usuario(payload)

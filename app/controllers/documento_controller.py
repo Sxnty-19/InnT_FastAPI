@@ -127,3 +127,48 @@ class DocumentoController:
                 cursor.close()
             if conn:
                 conn.close()
+
+    def get_documentos_usuario(self, payload: dict):
+        conn = None
+        cursor = None
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+            id_usuario = payload["id_usuario"]
+
+
+            query = """
+                SELECT 
+                    td.nombre AS tipo_documento,
+                    d.numero_documento,
+                    d.lugar_expedicion,
+                    d.url_imagen,
+                    d.estado
+                FROM documento d
+                JOIN tipo_documento td
+                    ON d.id_tdocumento = td.id_tdocumento
+                WHERE d.id_usuario = %s
+                AND d.estado = TRUE
+            """
+
+            cursor.execute(query, (id_usuario,))
+            data = cursor.fetchall()
+
+            if not data:
+                raise HTTPException(status_code=404, detail="No hay documentos registrados.")
+
+            return {
+                "success": True,
+                "data": jsonable_encoder(data)
+            }
+
+        except Exception as err:
+            raise HTTPException(status_code=500, detail=f"Error al obtener documentos: {err}")
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()

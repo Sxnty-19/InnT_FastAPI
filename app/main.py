@@ -50,7 +50,10 @@ app.include_router(reserva_habitacion_router, prefix="/reservas-habitaciones", t
 app.include_router(usuario_habitacion_router, prefix="/usuarios-habitaciones", tags=["Usuarios-Habitaciones"], dependencies=[Depends(verificar_token)])
 app.include_router(solicitud_router, prefix="/solicitudes", tags=["Solicitudes"], dependencies=[Depends(verificar_token)])
 
+#CRUD : C-Create(c), R-Read(r), U-Update(u), D-Delete(d)
+
 #uvicorn main:app --reload
 #fastapi dev main.py
 
-#CRUD : C-Create(c), R-Read(r), U-Update(u), D-Delete(d)
+#http://127.0.0.1:8000 (Local)
+#https://innt-fastapi.onrender.com (Render)
