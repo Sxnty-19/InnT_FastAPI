@@ -8,6 +8,7 @@ class Documento(BaseModel):
     id_usuario: int
     numero_documento: str
     lugar_expedicion: Optional[str] = None
+    url_imagen: Optional[str] = None
     estado: Optional[bool] = True
     date_created: Optional[datetime] = None
     date_updated: Optional[datetime] = None

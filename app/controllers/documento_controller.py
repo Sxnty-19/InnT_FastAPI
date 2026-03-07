@@ -23,11 +23,12 @@ class DocumentoController:
                     id_usuario,
                     numero_documento,
                     lugar_expedicion,
+                    url_imagen,
                     estado,
                     date_created,
                     date_updated
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s,%s, %s, %s, %s, %s)
                 RETURNING id_documento;
             """
             values = (
@@ -35,6 +36,7 @@ class DocumentoController:
                 documento.id_usuario,
                 documento.numero_documento,
                 documento.lugar_expedicion,
+                documento.url_imagen,
                 documento.estado,
                 fecha_actual,
                 fecha_actual
