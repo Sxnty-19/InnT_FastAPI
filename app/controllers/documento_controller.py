@@ -1,5 +1,5 @@
 import psycopg2
-import psycopg2.extras
+from psycopg2.extras import RealDictCursor
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from config.neon_config import get_db_connection
@@ -7,14 +7,14 @@ from utils.timezone_utils import get_fecha_actual
 from models.documento_model import Documento
 
 class DocumentoController:
-
-    def create_documento(self, documento: Documento): #---
+    #
+    def create_documento(self, documento: Documento):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             fecha_actual = get_fecha_actual()
 
             query = """
@@ -23,27 +23,26 @@ class DocumentoController:
                     id_usuario,
                     numero_documento,
                     lugar_expedicion,
-                    url_imagen,
+                    documento_validado,
                     estado,
                     date_created,
                     date_updated
-                )
-                VALUES (%s, %s, %s,%s, %s, %s, %s, %s)
-                RETURNING id_documento;
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                RETURNING id_documento
             """
             values = (
                 documento.id_tdocumento,
                 documento.id_usuario,
                 documento.numero_documento,
                 documento.lugar_expedicion,
-                documento.url_imagen,
+                documento.documento_validado,
                 documento.estado,
                 fecha_actual,
                 fecha_actual
             )
 
             cursor.execute(query, values)
-            new_id = cursor.fetchone()[0]
+            new_id = cursor.fetchone()["id_documento"]
             conn.commit()
 
             return {
@@ -52,7 +51,7 @@ class DocumentoController:
                 "id_documento": new_id
             }
 
-        except Exception as err:
+        except psycopg2.Error as err:
             if conn:
                 conn.rollback()
             raise HTTPException(status_code=500, detail=f"Error al crear documento: {err}")
@@ -62,19 +61,16 @@ class DocumentoController:
                 cursor.close()
             if conn:
                 conn.close()
-
-    def get_documentos(self): #---
+    #
+    def get_documentos(self):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-            cursor.execute("""
-                SELECT *
-                FROM documento
-            """)
+            cursor.execute("SELECT * FROM documento")
 
             data = cursor.fetchall()
 
@@ -86,7 +82,7 @@ class DocumentoController:
                 "data": jsonable_encoder(data)
             }
 
-        except Exception as err:
+        except psycopg2.Error as err:
             raise HTTPException(status_code=500, detail=f"Error al obtener documentos: {err}")
 
         finally:
@@ -94,18 +90,17 @@ class DocumentoController:
                 cursor.close()
             if conn:
                 conn.close()
-
-    def get_documento_by_id(self, id_documento: int): #---
+    #
+    def get_documento_by_id(self, id_documento: int):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
 
             cursor.execute("""
-                SELECT *
-                FROM documento
+                SELECT * FROM documento
                 WHERE id_documento = %s
             """, (id_documento,))
 
@@ -119,7 +114,7 @@ class DocumentoController:
                 "data": jsonable_encoder(data)
             }
 
-        except Exception as err:
+        except psycopg2.Error as err:
             raise HTTPException(status_code=500, detail=f"Error al obtener documento: {err}")
 
         finally:
@@ -127,45 +122,80 @@ class DocumentoController:
                 cursor.close()
             if conn:
                 conn.close()
-
-    def get_documentos_usuario(self, payload: dict):
+    #
+    def get_documentos_por_usuario(self, id_usuario: int):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-            id_usuario = payload["id_usuario"]
-
-
-            query = """
-                SELECT 
-                    td.nombre AS tipo_documento,
-                    d.numero_documento,
-                    d.lugar_expedicion,
-                    d.url_imagen,
-                    d.estado
+            cursor.execute("""
+                SELECT
+                    d.*,
+                    td.nombre AS tipo_documento
                 FROM documento d
-                JOIN tipo_documento td
+                JOIN tipo_documento td 
                     ON d.id_tdocumento = td.id_tdocumento
                 WHERE d.id_usuario = %s
                 AND d.estado = TRUE
-            """
+            """, (id_usuario,))
 
-            cursor.execute(query, (id_usuario,))
             data = cursor.fetchall()
 
             if not data:
-                raise HTTPException(status_code=404, detail="No hay documentos registrados.")
+                raise HTTPException(status_code=404, detail="No hay documentos registrados para este usuario.")
 
             return {
                 "success": True,
                 "data": jsonable_encoder(data)
             }
 
-        except Exception as err:
+        except psycopg2.Error as err:
             raise HTTPException(status_code=500, detail=f"Error al obtener documentos: {err}")
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+    #
+    def buscar_usuario_por_documento(self, numero_documento: str):
+        conn = None
+        cursor = None
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+            cursor.execute("""
+                SELECT
+                    u.id_usuario,
+                    u.primer_nombre,
+                    u.segundo_nombre,
+                    u.primer_apellido,
+                    u.segundo_apellido
+                FROM documento d
+                INNER JOIN usuario u 
+                    ON d.id_usuario = u.id_usuario
+                WHERE d.numero_documento = %s
+                LIMIT 1
+            """, (numero_documento,))
+
+            data = cursor.fetchone()
+
+            if not data:
+                raise HTTPException(status_code=404, detail="No se encontró ningún usuario con ese número de documento.")
+
+            return {
+                "success": True,
+                "message": "Usuario encontrado.",
+                "data": jsonable_encoder(data)
+            }
+
+        except psycopg2.Error as err:
+            raise HTTPException(status_code=500, detail=f"Error al buscar usuario: {err}")
 
         finally:
             if cursor:

@@ -1,5 +1,5 @@
 import psycopg2
-import psycopg2.extras
+from psycopg2.extras import RealDictCursor
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from config.neon_config import get_db_connection
@@ -7,14 +7,14 @@ from utils.timezone_utils import get_fecha_actual
 from models.modulo_model import Modulo
 
 class ModuloController:
-
-    def create_modulo(self, modulo: Modulo): #---
+    #
+    def create_modulo(self, modulo: Modulo):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=psycopg2)
             fecha_actual = get_fecha_actual()
 
             query = """
@@ -39,7 +39,7 @@ class ModuloController:
             )
 
             cursor.execute(query, values)
-            new_id = cursor.fetchone()[0]
+            new_id = cursor.fetchone()["id_modulo"]
             conn.commit()
 
             return {
@@ -58,14 +58,14 @@ class ModuloController:
                 cursor.close()
             if conn:
                 conn.close()
-
-    def get_modulos(self): #---
+    #
+    def get_modulos(self):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor = conn.cursor(cursor_factory=psycopg2)
 
             cursor.execute("""
                 SELECT *
@@ -90,16 +90,14 @@ class ModuloController:
                 cursor.close()
             if conn:
                 conn.close()
-
-    def get_modulo_by_id(self, id_modulo: int): #---
+    #
+    def get_modulo_by_id(self, id_modulo: int):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(
-                cursor_factory=psycopg2.extras.RealDictCursor
-            )
+            cursor = conn.cursor(cursor_factory=psycopg2)
 
             cursor.execute("""
                 SELECT *

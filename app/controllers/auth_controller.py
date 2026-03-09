@@ -1,13 +1,13 @@
+import psycopg2
 from fastapi import HTTPException
 from config.neon_config import get_db_connection
 from utils.pass_utils import hash_password , verify_password
 from utils.timezone_utils import get_fecha_actual
 from utils.auth_utils import crear_token
 from models.usuario_model import Usuario
-import psycopg2
 
 class AuthController:
-
+    #
     def register_user(self, usuario: Usuario):
         conn = None
         cursor = None
@@ -85,7 +85,7 @@ class AuthController:
                 cursor.close()
             if conn:
                 conn.close()
-
+    #
     def login_user(self, username: str, password: str):
         conn = None
         cursor = None

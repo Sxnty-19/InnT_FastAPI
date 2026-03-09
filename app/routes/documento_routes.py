@@ -1,23 +1,31 @@
-from fastapi import APIRouter, Depends
-from utils.auth_utils import verificar_token
-from models.documento_model import Documento
+from fastapi import APIRouter
 from controllers.documento_controller import DocumentoController
+from models.documento_model import Documento
 
 router = APIRouter()
 documento_controller = DocumentoController()
 
-@router.post("/c")
-async def create_documento(documento: Documento):
+# Crear documento
+@router.post("/")
+def create_documento(documento: Documento):
     return documento_controller.create_documento(documento)
 
-@router.get("/r")
-async def get_documentos():
+# Obtener todos los documentos
+@router.get("/")
+def get_documentos():
     return documento_controller.get_documentos()
 
-@router.get("/r/{id_documento}")
-async def get_documento_by_id(id_documento: int):
+# Obtener documento por ID
+@router.get("/{id_documento}")
+def get_documento_by_id(id_documento: int):
     return documento_controller.get_documento_by_id(id_documento)
 
-@router.get("/r-usuario")
-def get_documentos_usuario(payload: dict = Depends(verificar_token)):
-    return documento_controller.get_documentos_usuario(payload)
+# Obtener documentos de un usuario
+@router.get("/usuario/{id_usuario}")
+def get_documentos_por_usuario(id_usuario: int):
+    return documento_controller.get_documentos_por_usuario(id_usuario)
+
+# Buscar usuario por número de documento
+@router.get("/buscar/{numero_documento}")
+def buscar_usuario_por_documento(numero_documento: str):
+    return documento_controller.buscar_usuario_por_documento(numero_documento)

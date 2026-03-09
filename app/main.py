@@ -31,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.api_route("/", methods=["GET", "HEAD"], tags=["Sistema"])
+@app.api_route("/", methods=["GET"], tags=["Sistema"])
 async def root():
     return {"message": "API en funcionamiento..."}
 
@@ -49,8 +49,6 @@ app.include_router(reserva_router, prefix="/reservas", tags=["Reservas"], depend
 app.include_router(reserva_habitacion_router, prefix="/reservas-habitaciones", tags=["Reservas-Habitaciones"], dependencies=[Depends(verificar_token)])
 app.include_router(usuario_habitacion_router, prefix="/usuarios-habitaciones", tags=["Usuarios-Habitaciones"], dependencies=[Depends(verificar_token)])
 app.include_router(solicitud_router, prefix="/solicitudes", tags=["Solicitudes"], dependencies=[Depends(verificar_token)])
-
-#CRUD : C-Create(c), R-Read(r), U-Update(u), D-Delete(d)
 
 #uvicorn main:app --reload
 #fastapi dev main.py

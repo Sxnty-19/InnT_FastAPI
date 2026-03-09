@@ -9,6 +9,7 @@ class Documento(BaseModel):
     numero_documento: str
     lugar_expedicion: Optional[str] = None
     url_imagen: Optional[str] = None
+    documento_validado: Optional[bool] = False
     estado: Optional[bool] = True
     date_created: Optional[datetime] = None
     date_updated: Optional[datetime] = None

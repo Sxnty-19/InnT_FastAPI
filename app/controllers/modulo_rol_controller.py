@@ -1,5 +1,5 @@
 import psycopg2
-import psycopg2.extras
+from psycopg2.extras import RealDictCursor
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from config.neon_config import get_db_connection
@@ -7,14 +7,14 @@ from utils.timezone_utils import get_fecha_actual
 from models.modulo_rol_model import ModuloRol
 
 class ModuloRolController:
-
-    def create_modulo_rol(self, modulo_rol: ModuloRol): #---
+    #
+    def create_modulo_rol(self, modulo_rol: ModuloRol):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor()
+            cursor = conn.cursor(cursor_factory=psycopg2)
             fecha_actual = get_fecha_actual()
 
             query = """
@@ -37,7 +37,7 @@ class ModuloRolController:
             )
 
             cursor.execute(query, values)
-            new_id = cursor.fetchone()[0]
+            new_id = cursor.fetchone()["id_mxr"]
             conn.commit()
 
             return {
@@ -56,19 +56,16 @@ class ModuloRolController:
                 cursor.close()
             if conn:
                 conn.close()
-
-    def get_modulos_roles(self): #---
+    #
+    def get_modulos_roles(self):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor = conn.cursor(cursor_factory=psycopg2)
 
-            cursor.execute("""
-                SELECT *
-                FROM modulo_rol
-            """)
+            cursor.execute("""SELECT * FROM modulo_rol""")
 
             data = cursor.fetchall()
 
@@ -88,14 +85,14 @@ class ModuloRolController:
                 cursor.close()
             if conn:
                 conn.close()
-
-    def get_modulo_rol_by_id(self, id_mxr: int): #---
+    #
+    def get_modulo_rol_by_id(self, id_mxr: int):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor = conn.cursor(cursor_factory=psycopg2)
 
             cursor.execute("""
                 SELECT *
@@ -121,21 +118,16 @@ class ModuloRolController:
                 cursor.close()
             if conn:
                 conn.close()
-
-    def get_modulos_by_rol(self, payload: dict):
+    #
+    def get_modulos_by_rol(self, id_rol: int):
         conn = None
         cursor = None
 
         try:
-            id_rol = payload.get("id_rol")
-
-            if not id_rol:
-                raise HTTPException(status_code=401, detail="Token inválido: rol no encontrado.")
-
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cursor = conn.cursor(cursor_factory=psycopg2)
 
-            query = """
+            cursor.execute("""
                 SELECT 
                     m.id_modulo,
                     m.nombre,
@@ -146,9 +138,8 @@ class ModuloRolController:
                 WHERE mr.id_rol = %s
                 AND mr.estado = TRUE
                 AND m.estado = TRUE
-            """
+            """, (id_rol,))
 
-            cursor.execute(query, (id_rol,))
             data = cursor.fetchall()
 
             if not data:
