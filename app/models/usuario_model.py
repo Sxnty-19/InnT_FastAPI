@@ -11,8 +11,8 @@ class Usuario(BaseModel):
     segundo_apellido: str
     telefono: Optional[str] = None
     correo: Optional[EmailStr] = None 
-    username: str
-    password: str
+    username: Optional[str] = None
+    password: Optional[str] = None
     estado: Optional[bool] = True
     date_created: Optional[datetime] = None
     date_updated: Optional[datetime] = None
