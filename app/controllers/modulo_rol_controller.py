@@ -14,7 +14,7 @@ class ModuloRolController:
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             fecha_actual = get_fecha_actual()
 
             query = """
@@ -63,7 +63,7 @@ class ModuloRolController:
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
 
             cursor.execute("""SELECT * FROM modulo_rol""")
 
@@ -92,7 +92,7 @@ class ModuloRolController:
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
 
             cursor.execute("""
                 SELECT *
@@ -125,7 +125,7 @@ class ModuloRolController:
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
 
             id_rol = payload.get("id_rol")
 
