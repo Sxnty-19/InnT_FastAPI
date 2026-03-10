@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,Depends
 from controllers.modulo_rol_controller import ModuloRolController
 from models.modulo_rol_model import ModuloRol
+from utils.auth_utils import verify_token
 
 router = APIRouter()
 modulo_rol_controller = ModuloRolController()
@@ -21,6 +22,6 @@ def get_modulo_rol_by_id(id_mxr: int):
     return modulo_rol_controller.get_modulo_rol_by_id(id_mxr)
 
 # Obtener módulos según rol
-@router.get("/rol/{id_rol}")
-def get_modulos_by_rol(id_rol: int):
-    return modulo_rol_controller.get_modulos_by_rol(id_rol)
+@router.get("/rol/")
+def get_modulos_by_rol(payload: dict = Depends(verify_token)):
+    return modulo_rol_controller.get_modulos_by_rol(payload)

@@ -119,13 +119,15 @@ class ModuloRolController:
             if conn:
                 conn.close()
     #
-    def get_modulos_by_rol(self, id_rol: int):
+    def get_modulos_by_rol(self, payload: dict):
         conn = None
         cursor = None
 
         try:
             conn = get_db_connection()
             cursor = conn.cursor(cursor_factory=psycopg2)
+
+            id_rol = payload.get("id_rol")
 
             cursor.execute("""
                 SELECT 
