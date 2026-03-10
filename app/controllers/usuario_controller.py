@@ -194,43 +194,21 @@ class UsuarioController:
                 "segundo_nombre",
                 "primer_apellido",
                 "segundo_apellido",
-                "telefono",
-                "correo",
-                "username",
-                "password",
-                "estado"
+                "telefono"
             }
 
+            # Filtrar solo los campos permitidos
             data = {k: v for k, v in data.items() if k in campos_permitidos}
 
             if not data:
-                raise HTTPException(status_code=400, detail="No hay campos para actualizar")
-
-            if "password" in data:
-
-                cursor.execute(
-                    "SELECT password FROM usuario WHERE id_usuario = %s",
-                    (id_usuario,)
-                )
-
-                result = cursor.fetchone()
-
-                if not result:
-                    raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-                password_db = result[0]
-
-                if verify_password(data["password"], password_db):
-                    data["password"] = password_db
-                else:
-                    data["password"] = hash_password(data["password"])
+                raise HTTPException(status_code=400, detail="No hay campos válidos para actualizar")
 
             campos = ", ".join([f"{key} = %s" for key in data.keys()])
             valores = list(data.values())
 
             query = f"""
                 UPDATE usuario 
-                SET {campos}, date_updated = %s 
+                SET {campos}, date_updated = %s
                 WHERE id_usuario = %s
             """
 

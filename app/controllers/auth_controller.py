@@ -143,6 +143,7 @@ class AuthController:
                 "token_type": "bearer",
                 "user": {
                     "nombre": nombre_completo,
+                    "id_usuario": id_usuario,   
                     "rol": nombre_rol,
                     "id_rol": id_rol
                 }
