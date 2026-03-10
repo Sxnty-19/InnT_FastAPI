@@ -23,5 +23,5 @@ def get_modulo_rol_by_id(id_mxr: int):
 
 # Obtener módulos según rol
 @router.get("/rol/")
-def get_modulos_by_rol(payload: dict = Depends(verify_token)):
+def get_modulos_by_rol(payload: dict = Depends(verificar_token)):
     return modulo_rol_controller.get_modulos_by_rol(payload)
