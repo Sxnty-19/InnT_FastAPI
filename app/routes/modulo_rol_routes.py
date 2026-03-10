@@ -1,7 +1,7 @@
 from fastapi import APIRouter,Depends
 from controllers.modulo_rol_controller import ModuloRolController
 from models.modulo_rol_model import ModuloRol
-from utils.auth_utils import verify_token
+from utils.auth_utils import verificar_token
 
 router = APIRouter()
 modulo_rol_controller = ModuloRolController()
