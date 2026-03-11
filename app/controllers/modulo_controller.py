@@ -14,7 +14,7 @@ class ModuloController:
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
             fecha_actual = get_fecha_actual()
 
             query = """
@@ -65,7 +65,7 @@ class ModuloController:
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
 
             cursor.execute("""
                 SELECT *
@@ -97,7 +97,7 @@ class ModuloController:
 
         try:
             conn = get_db_connection()
-            cursor = conn.cursor(cursor_factory=psycopg2)
+            cursor = conn.cursor(cursor_factory=RealDictCursor)
 
             cursor.execute("""
                 SELECT *
