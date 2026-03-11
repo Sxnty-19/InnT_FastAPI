@@ -157,3 +157,70 @@ class AuthController:
                 cursor.close()
             if conn:
                 conn.close()
+            
+    def login_azure(self, correo: str):
+        conn = None
+        cursor = None
+
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT 
+                    u.id_usuario,
+                    u.primer_nombre,
+                    u.segundo_nombre,
+                    u.primer_apellido,
+                    u.segundo_apellido,
+                    r.id_rol,
+                    r.nombre
+                FROM usuario u
+                INNER JOIN rol r ON u.id_rol = r.id_rol
+                WHERE u.correo = %s AND u.estado = true
+            """, (correo,))
+
+            user = cursor.fetchone()
+
+            if not user:
+                raise HTTPException(status_code=404, detail="Usuario no registrado")
+
+            id_usuario = user[0]
+
+            primer_nombre = user[1]
+            segundo_nombre = user[2] or ""
+            primer_apellido = user[3]
+            segundo_apellido = user[4] or ""
+
+            id_rol = user[5]
+            nombre_rol = user[6]
+
+            nombre_completo = f"{primer_nombre} {segundo_nombre} {primer_apellido} {segundo_apellido}".strip()
+
+            payload = {
+                "id_usuario": id_usuario,
+                "id_rol": id_rol
+            }
+
+            token = crear_token(payload)
+
+            return {
+                "success": True,
+                "access_token": token,
+                "token_type": "bearer",
+                "user": {
+                    "nombre": nombre_completo,
+                    "id_usuario": id_usuario,
+                    "rol": nombre_rol,
+                    "id_rol": id_rol
+                }
+            }
+
+        except psycopg2.Error as err:
+            raise HTTPException(status_code=500, detail=f"Error en la base de datos: {err}")
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()

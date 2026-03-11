@@ -14,3 +14,8 @@ async def register_user(usuario: Usuario):
 @router.post("/login")
 async def login_user(username: str = Form(...), password: str = Form(...)):
     return auth_controller.login_user(username, password)
+
+# Login con Azure (solo enviando el correo)
+@router.post("/azure-login")
+async def login_azure(correo: str = Form(...)):
+    return auth_controller.login_azure(correo)
